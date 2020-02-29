@@ -1,0 +1,31 @@
+name: PortChuuExtras
+main: sh.chuu.port.mc.portchuuextras.PortChuuExtras
+version: @version@
+description: Port Chuu Extra Plugin
+api-version: 1.15
+author: Simon Chuu
+website: https://port.chuu.sh
+softdepend: [ProtocolLib]
+
+commands:
+  portchuuextras:
+    description: Port Chuu informational command
+    usage: /portchuuextras
+  op:
+    aliases: [summontnt]
+    description: idk why did i make this
+    usage: /op <name>
+    permission: portchuuextras.command.op
+  xray:
+    aliases: [selfban]
+    description: idk why did i make this
+    usage: /xray
+    permission: portchuuextras.command.xray
+
+permissions:
+  portchuuextras.command.xray:
+    default: true
+  portchuuextras.command.op:
+    default: true
+  portchuuextras.interact.sit:
+    default: true
