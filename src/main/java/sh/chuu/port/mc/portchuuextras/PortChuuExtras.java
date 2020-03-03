@@ -6,7 +6,7 @@ import sh.chuu.port.mc.portchuuextras.commands.CmdXray;
 import sh.chuu.port.mc.portchuuextras.listeners.ChairListener;
 
 public class PortChuuExtras extends JavaPlugin {
-    public static PortChuuExtras instance;
+    private static PortChuuExtras instance;
     private ChairListener chairListener;
 
     public static PortChuuExtras getInstance() {
