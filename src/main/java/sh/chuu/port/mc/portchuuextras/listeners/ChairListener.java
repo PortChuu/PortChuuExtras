@@ -1,4 +1,4 @@
-package sh.chuu.port.mc.portchuuextras;
+package sh.chuu.port.mc.portchuuextras.listeners;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -16,6 +16,7 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.spigotmc.event.entity.EntityDismountEvent;
+import sh.chuu.port.mc.portchuuextras.PortChuuExtras;
 
 import java.util.LinkedHashMap;
 import java.util.Map;

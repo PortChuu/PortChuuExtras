@@ -3,6 +3,7 @@ package sh.chuu.port.mc.portchuuextras;
 import org.bukkit.plugin.java.JavaPlugin;
 import sh.chuu.port.mc.portchuuextras.commands.CmdOp;
 import sh.chuu.port.mc.portchuuextras.commands.CmdXray;
+import sh.chuu.port.mc.portchuuextras.listeners.ChairListener;
 
 public class PortChuuExtras extends JavaPlugin {
     public static PortChuuExtras instance;
