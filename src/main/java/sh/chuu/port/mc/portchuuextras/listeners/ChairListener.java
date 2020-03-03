@@ -3,6 +3,7 @@ package sh.chuu.port.mc.portchuuextras.listeners;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.attribute.Attribute;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.data.Bisected;
@@ -57,7 +58,7 @@ public class ChairListener implements Listener {
             // Distance check - deny if too far distance or if y level too low
             Location bLoc = b.getLocation();
             Location pLoc = p.getLocation();
-            if (bLoc.getY() > pLoc.getY() + 0.5 || bLoc.distanceSquared(pLoc) > 4d)
+            if (bLoc.getY() > pLoc.getY() + 0.5 || bLoc.distanceSquared(pLoc) > 6)
                 return;
 
             if (b.getBlockData() instanceof Stairs) {
@@ -88,8 +89,13 @@ public class ChairListener implements Listener {
         Player p = ev.getPlayer();
         Location loc = postDismountTeleport.remove(p);
         if (loc != null) {
+            int ndt = p.getNoDamageTicks() - 2;
+            p.setNoDamageTicks(Integer.MAX_VALUE);
             ev.setTo(loc);
-            Bukkit.getScheduler().runTaskLater(plugin, () -> p.teleport(loc, PlayerTeleportEvent.TeleportCause.PLUGIN), 2);
+            Bukkit.getScheduler().runTaskLater(plugin, () -> {
+                p.teleport(loc, PlayerTeleportEvent.TeleportCause.PLUGIN);
+                p.setNoDamageTicks(Math.min(ndt, 0));
+            }, 2);
         }
     }
 
@@ -149,7 +155,7 @@ public class ChairListener implements Listener {
     }
 
     private boolean itemInteractable(Material m) {
-        if (m.isEdible())
+        if (m.isEdible()) // TODO: Submit bug report: on full hunger, isEdible is false when on main hand but is true when in offhand
             return true;
 
         switch (m) {
@@ -204,6 +210,8 @@ public class ChairListener implements Listener {
         as.setCanMove(false);
         as.setBasePlate(false);
         as.setVisible(false);
+        //noinspection ConstantConditions
+        as.getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue(0);
 
         mounted.put(as, b);
         Location to = p.getLocation();
@@ -302,7 +310,6 @@ public class ChairListener implements Listener {
                 e.teleport(to, PlayerTeleportEvent.TeleportCause.UNKNOWN);
             } else {
                 Player p = (Player) e;
-                p.setNoDamageTicks(10);
                 postDismountTeleport.put(p, to);
                 e.leaveVehicle();
             }
