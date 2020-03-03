@@ -8,9 +8,6 @@ website: https://port.chuu.sh
 softdepend: [ProtocolLib]
 
 commands:
-  portchuuextras:
-    description: Port Chuu informational command
-    usage: /portchuuextras
   op:
     aliases: [summontnt]
     description: idk why did i make this
@@ -21,11 +18,21 @@ commands:
     description: idk why did i make this
     usage: /xray
     permission: portchuuextras.command.xray
+  # Contributor Commands
+  simonorj:
+    aliases: [chuu]
+    description: idk why did i make this
+    usage: /xray
+    permission: portchuuextras.command.simonorj
 
 permissions:
   portchuuextras.command.xray:
     default: true
   portchuuextras.command.op:
     default: true
+  # Contributor Commands
+  portchuuextras.command.simonorj:
+    default: true
+  # Listener Commands
   portchuuextras.interact.sit:
     default: true

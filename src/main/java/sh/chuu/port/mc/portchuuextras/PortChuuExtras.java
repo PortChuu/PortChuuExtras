@@ -1,8 +1,8 @@
 package sh.chuu.port.mc.portchuuextras;
 
 import org.bukkit.plugin.java.JavaPlugin;
-import sh.chuu.port.mc.portchuuextras.commands.CmdOp;
-import sh.chuu.port.mc.portchuuextras.commands.CmdXray;
+import sh.chuu.port.mc.portchuuextras.commands.*;
+import sh.chuu.port.mc.portchuuextras.contributors.*;
 import sh.chuu.port.mc.portchuuextras.listeners.ChairListener;
 
 public class PortChuuExtras extends JavaPlugin {
@@ -21,6 +21,8 @@ public class PortChuuExtras extends JavaPlugin {
         getCommand("op").setExecutor(new CmdOp());
 
         getServer().getPluginManager().registerEvents(chairListener = new ChairListener(), this);
+
+        getCommand("simonorj").setExecutor(new SimonOrJ());
     }
 
     @Override
