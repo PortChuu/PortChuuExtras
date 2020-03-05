@@ -18,6 +18,7 @@ import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
+import org.bukkit.inventory.EquipmentSlot;
 import org.spigotmc.event.entity.EntityDismountEvent;
 import sh.chuu.port.mc.portchuuextras.PortChuuExtras;
 
@@ -40,35 +41,44 @@ public class ChairListener implements Listener {
 
     @EventHandler(ignoreCancelled = true)
     public void chairSit(PlayerInteractEvent ev) {
+        Block b = ev.getClickedBlock();
         Player p = ev.getPlayer();
-        Material mainhand = ev.getMaterial();
-        Material offhand = p.getInventory().getItemInOffHand().getType();
-        if (!p.hasPermission(SIT_PERM)
+
+        if (ev.getAction() != Action.RIGHT_CLICK_BLOCK
+                || ev.getHand() == EquipmentSlot.OFF_HAND  // Offhand activity is handled here (code won't probably reach here but /shrug)
+                || !p.hasPermission(SIT_PERM)
+                || b == null
+                || !(b.getBlockData() instanceof Stairs)
                 || p.isInsideVehicle()
                 || p.isSneaking()
                 || p.isSprinting()
-                || ev.getAction() != Action.RIGHT_CLICK_BLOCK
                 || ev.isBlockInHand()
-                || itemInteractable(mainhand)
-                || itemInteractable(offhand)
         ) return;
 
-        Block b = ev.getClickedBlock();
-        if (b != null) {
-            // Distance check - deny if too far distance or if y level too low
-            Location bLoc = b.getLocation();
-            Location pLoc = p.getLocation();
-            if (bLoc.getY() > pLoc.getY() + 0.5 || bLoc.distanceSquared(pLoc) > 6)
-                return;
+        Stairs s = (Stairs) b.getBlockData();
+        Material mainhand = ev.getMaterial();
+        Material offhand = p.getInventory().getItemInOffHand().getType();
+        boolean isHungry = p.getFoodLevel() != 20;
+        plugin.getLogger().info(mainhand + " " + offhand);
 
-            if (b.getBlockData() instanceof Stairs) {
-                Stairs s = (Stairs) b.getBlockData();
-                if (canSit(b, s, ev.getBlockFace())) {
-                    ev.setCancelled(true);
-                    chairMount(ev.getPlayer(), b, s);
-                }
-            }
+        if (itemInteractable(mainhand, isHungry)
+                || itemInteractable(offhand, isHungry)
+                || !canSit(b, s, ev.getBlockFace())
+        ) return;
+
+        // Distance check - deny if too far distance or if y level too low
+        Location bLoc = b.getLocation();
+        Location pLoc = p.getLocation();
+        if (bLoc.getY() > pLoc.getY() + 0.5) {
+            p.sendActionBar("You may not sit now; the stair is too high");
+            return;
+        } else if (bLoc.distanceSquared(pLoc) > 6) {
+            p.sendActionBar("You may not sit now; the stair is too far away");
+            return;
         }
+
+        ev.setCancelled(true);
+        chairMount(ev.getPlayer(), b, s);
     }
 
     @EventHandler(ignoreCancelled = true)
@@ -108,17 +118,17 @@ public class ChairListener implements Listener {
     private boolean canSit(Block b, Stairs s, BlockFace click) {
         if (s.getHalf() != Bisected.Half.BOTTOM
                 || !b.getRelative(BlockFace.UP).isPassable()
-                || click == s.getFacing()
                 || click == BlockFace.DOWN
-        )
-            return false;
+        ) return false;
 
         if (click == BlockFace.UP
-                || click == s.getFacing().getOppositeFace())
-            return true;
+                || click == s.getFacing().getOppositeFace()
+        ) return true;
 
         boolean left;
         switch (s.getShape()) {
+            case STRAIGHT:
+                return click != s.getFacing();
             case OUTER_LEFT:
             case OUTER_RIGHT:
                 return true;
@@ -131,6 +141,10 @@ public class ChairListener implements Listener {
             default:
                 return false;
         }
+
+        // At this point the stair configuration is inners only (L shape from top)
+        if (click == s.getFacing())
+            return false;
 
         switch (s.getFacing()) {
             case EAST:
@@ -154,8 +168,8 @@ public class ChairListener implements Listener {
         }
     }
 
-    private boolean itemInteractable(Material m) {
-        if (m.isEdible()) // TODO: Submit bug report: on full hunger, isEdible is false when on main hand but is true when in offhand
+    private boolean itemInteractable(Material m, boolean isHungry) {
+        if (isHungry && m.isEdible())
             return true;
 
         switch (m) {
