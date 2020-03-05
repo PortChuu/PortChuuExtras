@@ -8,6 +8,11 @@ website: https://port.chuu.sh
 softdepend: [ProtocolLib]
 
 commands:
+  fly:
+    aliases: [levitateban]
+    description: idk why did i make this
+    usage: /fly
+    permission: portchuuextras.command.fly
   op:
     aliases: [summontnt]
     description: idk why did i make this
@@ -26,9 +31,11 @@ commands:
     permission: portchuuextras.command.simonorj
 
 permissions:
-  portchuuextras.command.xray:
+  portchuuextras.command.fly:
     default: true
   portchuuextras.command.op:
+    default: true
+  portchuuextras.command.xray:
     default: true
   # Contributor Commands
   portchuuextras.command.simonorj:

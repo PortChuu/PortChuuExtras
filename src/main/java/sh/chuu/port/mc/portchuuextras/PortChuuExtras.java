@@ -17,8 +17,9 @@ public class PortChuuExtras extends JavaPlugin {
     public void onEnable() {
         PortChuuExtras.instance = this;
 
-        getCommand("xray").setExecutor(new CmdXray());
         getCommand("op").setExecutor(new CmdOp());
+        getCommand("fly").setExecutor(new CmdFly());
+        getCommand("xray").setExecutor(new CmdXray());
 
         getServer().getPluginManager().registerEvents(chairListener = new ChairListener(), this);
 
