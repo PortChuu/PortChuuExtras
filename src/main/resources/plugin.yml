@@ -9,7 +9,7 @@ softdepend: [ProtocolLib]
 
 commands:
   fly:
-    aliases: [levitateban]
+    aliases: [levitatekick]
     description: idk why did i make this
     usage: /fly
     permission: portchuuextras.command.fly
@@ -19,15 +19,15 @@ commands:
     usage: /op <name>
     permission: portchuuextras.command.op
   xray:
-    aliases: [selfban]
+    aliases: [unloadkick]
     description: idk why did i make this
     usage: /xray
     permission: portchuuextras.command.xray
   # Contributor Commands
   simonorj:
     aliases: [chuu]
-    description: idk why did i make this
-    usage: /xray
+    description: SimonOrJ's Owner Command
+    usage: /SimonOrJ
     permission: portchuuextras.command.simonorj
 
 permissions:
