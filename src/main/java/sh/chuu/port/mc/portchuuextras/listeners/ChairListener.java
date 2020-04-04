@@ -7,6 +7,7 @@ import org.bukkit.attribute.Attribute;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.data.Bisected;
+import org.bukkit.block.data.BlockData;
 import org.bukkit.block.data.type.Stairs;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Entity;
@@ -14,6 +15,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
@@ -238,8 +240,14 @@ public class ChairListener implements Listener {
         if (armorStand instanceof ArmorStand) {
             Block b = mounted.remove(armorStand);
             if (b != null) {
+                BlockData data = b.getBlockData();
+                if (!(data instanceof Stairs)) {
+                    ejectAll(armorStand, b.getLocation().add(0.5, 0.0, 0.5), tpImmediately);
+                    armorStand.remove();
+                    return;
+                }
 
-                Stairs s = (Stairs) b.getBlockData();
+                Stairs s = (Stairs) data;
                 double x, y, z;
 
                 Block facingLow = b.getRelative(s.getFacing().getOppositeFace());
