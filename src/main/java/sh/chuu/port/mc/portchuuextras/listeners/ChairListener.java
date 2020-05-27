@@ -61,7 +61,6 @@ public class ChairListener implements Listener {
         Material mainhand = ev.getMaterial();
         Material offhand = p.getInventory().getItemInOffHand().getType();
         boolean isHungry = p.getFoodLevel() != 20;
-        plugin.getLogger().info(mainhand + " " + offhand);
 
         if (itemInteractable(mainhand, isHungry)
                 || itemInteractable(offhand, isHungry)
