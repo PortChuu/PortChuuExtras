@@ -24,11 +24,11 @@ commands:
     usage: /xray
     permission: portchuuextras.command.xray
   # Contributor Commands
-  simonorj:
+  chuu_shi:
     aliases: [chuu]
-    description: SimonOrJ's Owner Command
-    usage: /SimonOrJ
-    permission: portchuuextras.command.simonorj
+    description: chuu_shi's Owner Command
+    usage: /chuu_shi
+    permission: portchuuextras.command.chuu_shi
 
 permissions:
   portchuuextras.command.fly:
@@ -38,7 +38,7 @@ permissions:
   portchuuextras.command.xray:
     default: true
   # Contributor Commands
-  portchuuextras.command.simonorj:
+  portchuuextras.command.chuu_shi:
     default: true
   # Listener Commands
   portchuuextras.interact.sit:

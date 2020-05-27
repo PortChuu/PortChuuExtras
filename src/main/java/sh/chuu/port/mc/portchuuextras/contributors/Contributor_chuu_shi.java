@@ -9,11 +9,11 @@ import org.bukkit.command.TabExecutor;
 
 import java.util.List;
 
-public class SimonOrJ implements TabExecutor {
+public class Contributor_chuu_shi implements TabExecutor {
 
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
-        TextComponent send = new TextComponent("You wrote something illegal. Glae glaceon!");
+        TextComponent send = new TextComponent(":eyes: hai");
         send.setColor(ChatColor.DARK_AQUA);
         sender.sendMessage(send);
         return true;
