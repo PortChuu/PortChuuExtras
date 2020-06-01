@@ -103,7 +103,16 @@ public class CmdFly implements TabExecutor {
         }
 
         @EventHandler
+        public void onQuitWhileFlyingEvent(PlayerQuitEvent ev) {
+            onPlayerLeave(ev);
+        }
+
+        @EventHandler
         public void flyKickEvent(PlayerKickEvent ev) {
+            onPlayerLeave(ev);
+        }
+
+        private void onPlayerLeave(PlayerEvent ev) {
             Player p = ev.getPlayer();
             PlayerStatus s = runner.remove(p);
             if (s == null) return;
