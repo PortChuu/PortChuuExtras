@@ -9,22 +9,18 @@ softdepend: [ProtocolLib]
 
 commands:
   fly:
-    aliases: [levitatekick]
     description: idk why did i make this
     usage: /fly
     permission: portchuuextras.command.fly
   op:
-    aliases: [summontnt]
     description: idk why did i make this
     usage: /op <name>
     permission: portchuuextras.command.op
   stop:
-    aliases: [dealykick]
     description: idk why did i make this
     usage: /stop
     permission: portchuuextras.command.stop
   xray:
-    aliases: [unloadkick]
     description: idk why did i make this
     usage: /xray
     permission: portchuuextras.command.xray
