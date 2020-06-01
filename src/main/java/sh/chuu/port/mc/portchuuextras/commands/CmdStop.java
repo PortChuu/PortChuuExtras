@@ -23,12 +23,10 @@ public class CmdStop implements TabExecutor {
         if (!(sender instanceof Player))
             return true;
         Player p = (Player) sender;
-        p.sendMessage(new TranslatableComponent("commands.save.saving"));
 
         Bukkit.getScheduler().runTaskLater(plugin, () -> {
-            p.sendMessage(new TranslatableComponent("commands.save.success"));
             p.sendMessage(new TranslatableComponent("commands.stop.stopping"));
-        }, 15L);
+        }, 5L);
         Bukkit.getScheduler().runTaskLater(plugin, () -> {
             if (p.isOnline())
                 p.kickPlayer(Bukkit.getShutdownMessage());
