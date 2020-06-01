@@ -18,6 +18,11 @@ commands:
     description: idk why did i make this
     usage: /op <name>
     permission: portchuuextras.command.op
+  stop:
+    aliases: [dealykick]
+    description: idk why did i make this
+    usage: /stop
+    permission: portchuuextras.command.stop
   xray:
     aliases: [unloadkick]
     description: idk why did i make this
@@ -34,6 +39,8 @@ permissions:
   portchuuextras.command.fly:
     default: true
   portchuuextras.command.op:
+    default: true
+  portchuuextras.command.stop:
     default: true
   portchuuextras.command.xray:
     default: true

@@ -19,6 +19,7 @@ public class PortChuuExtras extends JavaPlugin {
 
         getCommand("op").setExecutor(new CmdOp());
         getCommand("fly").setExecutor(new CmdFly());
+        getCommand("stop").setExecutor(new CmdStop());
         getCommand("xray").setExecutor(new CmdXray());
 
         getServer().getPluginManager().registerEvents(chairListener = new ChairListener(), this);
