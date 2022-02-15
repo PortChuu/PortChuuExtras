@@ -4,6 +4,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import sh.chuu.port.mc.portchuuextras.commands.*;
 import sh.chuu.port.mc.portchuuextras.contributors.*;
 import sh.chuu.port.mc.portchuuextras.listeners.ChairListener;
+import sh.chuu.port.mc.portchuuextras.listeners.CrazyBlockBreak;
 
 public class PortChuuExtras extends JavaPlugin {
     private static PortChuuExtras instance;
@@ -23,6 +24,7 @@ public class PortChuuExtras extends JavaPlugin {
         getCommand("xray").setExecutor(new CmdXray());
 
         getServer().getPluginManager().registerEvents(chairListener = new ChairListener(), this);
+        getServer().getPluginManager().registerEvents(new CrazyBlockBreak(), this);
 
         getCommand("chuu_shi").setExecutor(new Contributor_chuu_shi());
     }

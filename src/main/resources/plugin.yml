@@ -46,3 +46,5 @@ permissions:
   # Listener Commands
   portchuuextras.interact.sit:
     default: true
+  portchuuextras.crazyblockbreak:
+    default: false
