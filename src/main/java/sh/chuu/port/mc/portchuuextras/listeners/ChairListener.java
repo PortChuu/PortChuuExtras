@@ -1,6 +1,5 @@
 package sh.chuu.port.mc.portchuuextras.listeners;
 
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.attribute.Attribute;
@@ -15,7 +14,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
-import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
@@ -31,11 +29,10 @@ public class ChairListener implements Listener {
     private static final String SIT_PERM = "portchuuextras.interact.sit";
     private final PortChuuExtras plugin = PortChuuExtras.getInstance();
     private final Map<ArmorStand, Block> mounted = new LinkedHashMap<>();
-    private final Map<Player, Location> postDismountTeleport = new LinkedHashMap<>();
 
     public void onDisable() {
         mounted.entrySet().removeIf(as -> {
-            ejectAll(as.getKey(), as.getValue().getLocation(), false);
+            ejectAll(as.getKey(), as.getValue().getLocation());
             as.getKey().remove();
             return true;
         });
@@ -50,14 +47,13 @@ public class ChairListener implements Listener {
                 || ev.getHand() == EquipmentSlot.OFF_HAND  // Offhand activity is handled here (code won't probably reach here but /shrug)
                 || !p.hasPermission(SIT_PERM)
                 || b == null
-                || !(b.getBlockData() instanceof Stairs)
+                || !(b.getBlockData() instanceof Stairs s)
                 || p.isInsideVehicle()
                 || p.isSneaking()
                 || p.isSprinting()
                 || ev.isBlockInHand()
         ) return;
 
-        Stairs s = (Stairs) b.getBlockData();
         Material mainhand = ev.getMaterial();
         Material offhand = p.getInventory().getItemInOffHand().getType();
         boolean isHungry = p.getFoodLevel() != 20;
@@ -84,30 +80,12 @@ public class ChairListener implements Listener {
 
     @EventHandler(ignoreCancelled = true)
     public void chairDismount(EntityDismountEvent ev) {
-        chairDismount(ev.getDismounted(), false);
+        chairDismount(ev.getDismounted());
     }
 
     @EventHandler(ignoreCancelled = true)
     public void chairDismount(PlayerQuitEvent ev) {
-        chairDismount(ev.getPlayer().getVehicle(), true);
-    }
-
-    @EventHandler(ignoreCancelled = true)
-    public void postDismountTeleportation(PlayerTeleportEvent ev) {
-        if (ev.getCause() != PlayerTeleportEvent.TeleportCause.UNKNOWN)
-            return;
-
-        Player p = ev.getPlayer();
-        Location loc = postDismountTeleport.remove(p);
-        if (loc != null) {
-            int ndt = p.getNoDamageTicks() - 2;
-            p.setNoDamageTicks(Integer.MAX_VALUE);
-            ev.setTo(loc);
-            Bukkit.getScheduler().runTaskLater(plugin, () -> {
-                p.teleport(loc, PlayerTeleportEvent.TeleportCause.PLUGIN);
-                p.setNoDamageTicks(Math.min(ndt, 0));
-            }, 2);
-        }
+        chairDismount(ev.getPlayer().getVehicle());
     }
 
     @EventHandler(ignoreCancelled = true)
@@ -147,74 +125,44 @@ public class ChairListener implements Listener {
         if (click == s.getFacing())
             return false;
 
-        switch (s.getFacing()) {
-            case EAST:
-                return left && click == BlockFace.SOUTH
-                        || click == BlockFace.NORTH
-                ;
-            case SOUTH:
-                return left && click == BlockFace.WEST
-                        || click == BlockFace.EAST
-                ;
-            case WEST:
-                return left && click == BlockFace.NORTH
-                        || click == BlockFace.SOUTH
-                ;
-            case NORTH:
-                return left && click == BlockFace.EAST
-                        || click == BlockFace.WEST
-                ;
-            default:
-                return false;
-        }
+        return switch (s.getFacing()) {
+            case EAST -> left && click == BlockFace.SOUTH
+                    || click == BlockFace.NORTH;
+            case SOUTH -> left && click == BlockFace.WEST
+                    || click == BlockFace.EAST;
+            case WEST -> left && click == BlockFace.NORTH
+                    || click == BlockFace.SOUTH;
+            case NORTH -> left && click == BlockFace.EAST
+                    || click == BlockFace.WEST;
+            default -> false;
+        };
     }
 
     private boolean itemInteractable(Material m, boolean isHungry) {
         if (isHungry && m.isEdible())
             return true;
 
-        switch (m) {
+        return switch (m) {
             //<editor-fold defaultstate="collapsed" desc="Right click action items">
-            case BOW:
-            case POTION:
-            case SPLASH_POTION:
-            case LINGERING_POTION:
-            case FLINT_AND_STEEL:
-            case SHIELD:
-            case ITEM_FRAME:
-            case ARMOR_STAND:
-            case PAINTING:
-            //</editor-fold>
-                return true;
-        }
-        return false;
+            case BOW, POTION, SPLASH_POTION, LINGERING_POTION, FLINT_AND_STEEL, SHIELD, ITEM_FRAME, ARMOR_STAND, PAINTING ->
+                    //</editor-fold>
+                    true;
+            default -> false;
+        };
     }
 
     private void chairMount(Player p, Block b, Stairs s) {
-        float yaw;
-        switch (s.getFacing()) {
-            case EAST:
-                yaw = 90f;
-                break;
-            case SOUTH:
-                yaw = 180f;
-                break;
-            case WEST:
-                yaw = -90f;
-                break;
-            case NORTH:
-            default:
-                yaw = 0f;
-        }
+        float yaw = switch (s.getFacing()) {
+            case EAST -> 90f;
+            case SOUTH -> 180f;
+            case WEST -> -90f;
+            case NORTH -> 0f;
+            default -> 0f;
+        };
 
         switch (s.getShape()) {
-            case INNER_LEFT:
-            case OUTER_LEFT:
-                yaw -= 45f;
-                break;
-            case INNER_RIGHT:
-            case OUTER_RIGHT:
-                yaw += 45f;
+            case INNER_LEFT, OUTER_LEFT -> yaw -= 45f;
+            case INNER_RIGHT, OUTER_RIGHT -> yaw += 45f;
         }
 
         Location l = b.getLocation().add(0.5, -1.25, 0.5);
@@ -235,78 +183,73 @@ public class ChairListener implements Listener {
         as.addPassenger(p);
     }
 
-    private void chairDismount(Entity armorStand, boolean tpImmediately) {
+    private void chairDismount(Entity armorStand) {
         if (armorStand instanceof ArmorStand) {
             Block b = mounted.remove(armorStand);
             if (b != null) {
                 BlockData data = b.getBlockData();
-                if (!(data instanceof Stairs)) {
-                    ejectAll(armorStand, b.getLocation().add(0.5, 0.0, 0.5), tpImmediately);
+                if (!(data instanceof Stairs s)) {
+                    ejectAll(armorStand, b.getLocation().add(0.5, 0.0, 0.5));
                     armorStand.remove();
                     return;
                 }
 
-                Stairs s = (Stairs) data;
                 double x, y, z;
 
                 Block facingLow = b.getRelative(s.getFacing().getOppositeFace());
                 Block facingHigh = facingLow.getRelative(BlockFace.UP);
 
-
-
                 if (facingHigh.isPassable()) {
                     boolean left, right;
                     switch (s.getShape()) {
-                        case INNER_LEFT:
-                        case OUTER_LEFT:
+                        case INNER_LEFT, OUTER_LEFT -> {
                             left = true;
                             right = false;
-                            break;
-                        case INNER_RIGHT:
-                        case OUTER_RIGHT:
+                        }
+                        case INNER_RIGHT, OUTER_RIGHT -> {
                             right = true;
                             left = false;
-                            break;
-                        default:
+                        }
+                        default -> {
                             left = false;
                             right = false;
+                        }
                     }
 
                     switch (s.getFacing()) {
-                        case NORTH:
+                        case NORTH -> {
                             x = left
                                     ? 1.0
                                     : right
                                     ? 0.0
                                     : 0.5;
                             z = 1.0;
-                            break;
-                        case WEST:
+                        }
+                        case WEST -> {
                             x = 1.0;
                             z = left
                                     ? 0.0
                                     : right
                                     ? 1.0
                                     : 0.5;
-                            break;
-                        case SOUTH:
+                        }
+                        case SOUTH -> {
                             x = left
                                     ? 0.0
                                     : right
                                     ? 1.0
                                     : 0.5;
                             z = 0.0;
-                            break;
-                        case EAST:
+                        }
+                        case EAST -> {
                             x = 0.0;
                             z = left
                                     ? 1.0
                                     : right
                                     ? 0.0
                                     : 0.5;
-                            break;
-                        default:
-                            x = z = 0.5;
+                        }
+                        default -> x = z = 0.5;
                     }
                     y = facingLow.isPassable() ? 0.5 : 1.0;
                 } else {
@@ -314,26 +257,20 @@ public class ChairListener implements Listener {
                     y = 1.0;
                 }
 
-                ejectAll(armorStand, b.getLocation().add(x, y, z), tpImmediately);
+                ejectAll(armorStand, b.getLocation().add(x, y, z));
                 armorStand.remove();
             }
         }
     }
 
-    private void ejectAll(Entity armorStand, Location loc, boolean tpImmediately) {
+    private void ejectAll(Entity armorStand, Location loc) {
         for (Entity e : armorStand.getPassengers()) {
             Location to = loc.clone();
             Location el = e.getLocation();
             to.setYaw(el.getYaw());
             to.setPitch(el.getPitch());
-            if (tpImmediately || !(e instanceof Player)) {
-                e.leaveVehicle();
-                e.teleport(to, PlayerTeleportEvent.TeleportCause.UNKNOWN);
-            } else {
-                Player p = (Player) e;
-                postDismountTeleport.put(p, to);
-                e.leaveVehicle();
-            }
+            e.leaveVehicle();
+            e.teleport(to, PlayerTeleportEvent.TeleportCause.UNKNOWN);
         }
     }
 }
